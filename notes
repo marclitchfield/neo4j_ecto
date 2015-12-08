@@ -1,0 +1,14 @@
+test_helper.exs
+  TestRepo.start_link (Ecto.Integration.Repo < Ecto.Repo)
+    Ecto.Repo.Supervisor.start_link(__MODULE__, @otp_app, @adapter, opts)
+      Supervisor.start_link(__MODULE__, {name, repo, otp_app, adapter, opts}, [name: name])
+        Ecto.Repo.Supervisor.init
+          supervise([supervisor(adapter, [repo, opts])])
+
+
+Ecto.Repo.Supervisor
+  Neo4j.Ecto
+    :poolboy
+      Neo4j.Sips.Connection
+
+  
