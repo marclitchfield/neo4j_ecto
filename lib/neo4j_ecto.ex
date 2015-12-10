@@ -1,13 +1,16 @@
 defmodule Neo4j.Ecto do
   @behaviour Ecto.Adapter
+  alias Neo4j.Sips, as: Neo4j
 
   defmacro __before_compile__(_env) do
   end
 
   def start_link(_name, _opts) do
+    # This is probably not the right way to do this. Need to figure out how
+    # to properly manage the lifetime of these required processes.
     {:ok, _} = Application.ensure_all_started(:hackney)
     {:ok, _} = Application.ensure_all_started(:con_cache)
-    Neo4j.Sips.start(Neo4j.Sips, [])
+    Neo4j.start(Neo4j.Sips, [])
   end
 
   def stop(_pid, _timeout) do
@@ -28,12 +31,16 @@ defmodule Neo4j.Ecto do
     {:nocache, {function, query}}
   end
 
-  def execute(_repo, _meta, {_function, _query}, _params, _preprocess, _opts) do
-    {:ok, nil}
+  def execute(_repo, _meta, {_function, query}, params, _preprocess, opts) do
+    {:ok, []}
   end
 
-  def insert(_repo, _meta, _params, nil, [], _opts) do
-    {:ok, []}
+  require IEx
+  def insert(repo, meta, fields, autogenerate_id, returning, options) do
+    # TODO: scrub label to guard against injection. Cannot parameterize labels in Cypher.
+    label = meta[:source] |> elem(1)
+    title = fields[:title]
+    Neo4j.query(Neo4j.conn, "CREATE (n:#{label} {title:{title}})", %{label: label, title: title})
   end
 
   def update(_repo, _meta, _fields, _filter, _autogenerate, _returning, _opts) do
