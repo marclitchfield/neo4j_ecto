@@ -40,7 +40,7 @@ defmodule Neo4j.Ecto do
     # TODO: scrub label to guard against injection. Cannot parameterize labels in Cypher.
     label = meta[:source] |> elem(1)
     title = fields[:title]
-    Neo4j.query(Neo4j.conn, "CREATE (n:#{label} {title:{title}})", %{label: label, title: title})
+    Neo4j.query(Neo4j.conn, "CREATE (n:#{label} {title:{title}})", %{title: title})
   end
 
   def update(_repo, _meta, _fields, _filter, _autogenerate, _returning, _opts) do
