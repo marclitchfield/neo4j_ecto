@@ -1,4 +1,5 @@
-Neo4jEcto
+neo4j_ecto
 =========
 
-** TODO: Add description **
+## Neo4j Ecto adapter
+
